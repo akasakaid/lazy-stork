@@ -33,6 +33,9 @@ def http(ses: requests.Session, url, data=None):
             ):
                 open("http.log", "w").write("")
             open("http.log", "a", encoding="utf-8").write(f"{res.text}\n")
+            if res.status_code == 504:
+                print(f"{black}[x] {yellow}connection timeout !")
+                continue
             return res
         except requests.exceptions.ConnectionError:
             print(f"{black}[x] {yellow}connection error !")
