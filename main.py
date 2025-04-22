@@ -53,33 +53,20 @@ def is_expired(token=None):
         return True
     return False
 
-
-def get_client_id(token=None):
-    if token is None:
-        return False
-    header, payload, sign = token.split(".")
-    deload = urlsafe_b64decode(payload + "==")
-    jeload = json.loads(deload)
-    client_id = jeload.get("client_id")
-    return client_id
-
-
-def renew_token(refresh_token, client_id):
-    url = "https://stork-prod-apps.auth.ap-northeast-1.amazoncognito.com/oauth2/token"
-    data = (
-        f"grant_type=refresh_token&client_id={client_id}&refresh_token={refresh_token}"
-    )
+def renew_token(refresh_token):
+    url = "https://app-auth.jp.stork-oracle.network/token?grant_type=refresh_token"
+    data = {"refresh_token": "-E8Ux7QmAPQdTmOBw_wGrQ"}
     headers = {
         "Accept": "*/*",
         "Accept-Language": "en-US,en;q=0.9",
         "Connection": "keep-alive",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Host": "stork-prod-apps.auth.ap-northeast-1.amazoncognito.com",
+        "Content-Type": "application/json",
+        "Host": "app-auth.jp.stork-oracle.network",
         "Origin": "chrome-extension://knnliglhgkmlblppdejchidfihjnockl",
         "Sec-Fetch-Dest": "empty",
         "Sec-Fetch-Mode": "cors",
         "Sec-Fetch-Site": "cross-site",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
     }
     ses = requests.Session()
     ses.headers.update(headers)
@@ -169,7 +156,7 @@ def main():
 >
 """
     while True:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        os.system("cls" if os.name == "nt" else "clear")
         print(bann)
         print(menu)
         choice = input("input number : ")
@@ -177,19 +164,19 @@ def main():
         if choice == "1":
             rtoken = input("input refresh token : ")
             atoken = input("input access token : ")
-            with open('account.json','r') as r:
+            with open("account.json", "r") as r:
                 account = json.loads(r.read())
-                account['refresh_token'] = rtoken
-                account['access_token'] = atoken
-                open('account.json','w').write(json.dumps(account,indent=4))
+                account["refresh_token"] = rtoken
+                account["access_token"] = atoken
+                open("account.json", "w").write(json.dumps(account, indent=4))
                 input(f"{black}[x] {blue}press enter to continue !")
                 continue
 
         elif choice == "2":
-            with open('account.json','r') as r:
+            with open("account.json", "r") as r:
                 account = json.loads(r.read())
-            refresh_token = account.get('refresh_token')
-            access_token = account.get('access_token')
+            refresh_token = account.get("refresh_token")
+            access_token = account.get("access_token")
             status_rtoken = f"{red}not found" if refresh_token is None else f"{green}ok"
             status_atoken = f"{red}not found" if access_token is None else f"{green}ok"
             print(f"{blue}refresh token : {status_rtoken}")
@@ -199,10 +186,9 @@ def main():
                 print(f"{black}[x] {yellow}you haven't added an account yet.{reset}")
                 input(f"{black}[x] {blue}press enter to continue !{reset}")
                 continue
-            client_id = get_client_id(token=access_token)
             while True:
                 access_token = renew_token(
-                    refresh_token=refresh_token, client_id=client_id
+                    refresh_token=refresh_token
                 )
                 if access_token is None:
                     print(f"{black}[x] {red}access token not found in response !")
