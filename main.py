@@ -70,7 +70,7 @@ def renew_token(refresh_token):
     }
     ses = requests.Session()
     ses.headers.update(headers)
-    res = http(ses=ses, url=url, data=data)
+    res = http(ses=ses, url=url, data=json.dumps(data))
     access_token = res.json().get("access_token")
     if access_token is None:
         print(f"{black}[x] {red}failed get access token !")
@@ -143,8 +143,6 @@ def countdown(t):
 
 
 def main():
-    if not os.path.exists("accounts.json"):
-        open("accounts.json", "w").write(json.dumps([]))
     menu = """
 1.) add account
 2.) start
